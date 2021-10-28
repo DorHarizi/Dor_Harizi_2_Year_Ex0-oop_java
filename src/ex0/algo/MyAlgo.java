@@ -48,7 +48,17 @@ public class MyAlgo implements ElevatorAlgo {
                     f2(elev);
                 } else {
                     if ((elev_up_down[0][elev].peek() != null) && (elev_up_down[1][elev].peek() != null)) {
-                        if()
+                        int tmpup = elev_up_down[0][elev].peek();
+                        int tmpdown = elev_up_down[1][elev].peek();
+                        int currup = (int)((tmpup%z)+1);
+                        int destup = (int)(tmpup/z);
+                        int currdown = (int)((tmpdown%z)+1);
+                        int destdown = (int)(tmpdown/2);
+
+
+
+
+
 
 
                     }
@@ -103,5 +113,33 @@ public class MyAlgo implements ElevatorAlgo {
                 stillwork[elev] = false;
             }
         }
+    private double checkNumFloorsPerCall(int src, int dest, int elev) {
+        int ans = 0;
+        int numFloor = checkNumFloorsSD(src, dest);
+        Elevator currElev = this.myBuilding.getElevetor(elev);
+//      int state = currElev.getState(); // return the state up = 1, down =-1, level = 0 (not move)
+        int currPos = currElev.getPos(); //return the current floor
+        if (src < currPos) {
+            ans = currPos - src;
+        }else if(src > currPos){
+            ans = src - currPos;
+        }else{
+            ans = 0;
+        }
+        return ans + numFloor;
+    }
+    private double timePerCall(int elev, int src, int dest){
+        Elevator newElev = this.myBuilding.getElevetor(elev);
+        double speed = newElev.getSpeed();
+        // add call in case that the pos and the src are even
+        double ans = (2*(newElev.getTimeForClose() + newElev.getTimeForOpen()) + checkNumFloorsPerCall(src, dest, elev)*speed);
+        return ans;
+    }
+    private double elevatorSpeed_avaragePerCall(int elev, int src, int dest){
+        Elevator newElev = this.myBuilding.getElevetor(elev);
+        double speed = newElev.getSpeed();
+        double ans = (speed + (speed * timePerCall(elev, src, dest))) /2;
+        return ans;
+    }
 
     }
