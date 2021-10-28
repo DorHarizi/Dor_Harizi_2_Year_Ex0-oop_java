@@ -3,6 +3,8 @@ package ex0.algo;
 import ex0.Building;
 import ex0.CallForElevator;
 import ex0.Elevator;
+
+import java.util.ArrayList;
 import java.util.Queue;
 
 public class MyAlgo implements ElevatorAlgo {
@@ -11,7 +13,6 @@ public class MyAlgo implements ElevatorAlgo {
     private Queue<Integer>[][] elev_up_down; //elev_up_down [size(2) row up + row down][building floors];
     private double z;
     private boolean[] stillwork;
-
 
     public MyAlgo(Building b) {
         myBuilding = b;
@@ -35,32 +36,75 @@ public class MyAlgo implements ElevatorAlgo {
 
     @Override
     public int allocateAnElevator(CallForElevator c) {
-        return 0;
+        int ext = finalNum(c.getSrc(), c.getDest());
+
+        for(int i = 0; i < myBuilding.numberOfElevetors(); i++) {
+            if (c.getState() == UP) {
+                if (elev_up_down[0][i].isEmpty()) {
+                    elev_up_down[0][i].add(ext);
+                    return i;
+                }
+            }
+            if (c.getState() == DOWN) {
+                if (elev_up_down[1][i].isEmpty()) {
+                    elev_up_down[1][i].add(ext);
+                    return i;
+                }
+            }
+        }
+
+        for(int i = 0; i < myBuilding.numberOfElevetors(); i++) {
+
+            double FinalUp = (int) checkTheLastValueInTheQueue(i, 0);
+            int srcFinalUp = (int) (FinalUp % z) + 1;
+            int destFinalUp = (int) (FinalUp / z);
+
+            double FinalDown = (int) checkTheLastValueInTheQueue(i, 1);
+            int srcFinalDown = (int) (FinalDown % z) + 1;
+            int destFinalDown = (int) (FinalDown / z);
+
+            if (c.getState() == UP) {
+
+                //if elev up src <= c.crs
+                if (srcFinalUp <= c.getSrc()) {
+                    elev_up_down[0][i].add(ext);
+                    return i;
+                }
+                //if elev down dest >= c.src
+                if (destFinalDown >= c.getSrc()) {
+                    elev_up_down[0][i].add(ext);
+                    return i;
+                }
+            }
+            if (c.getState() == DOWN){
+
+                if(srcFinalDown >+ c.getSrc()){
+                    elev_up_down[1][i].add(ext);
+                    return i;
+                }
+
+                if(srcFinalDown <= c.getSrc()){
+                    elev_up_down[1][i].add(ext);
+                    return i;
+                }
+
+            }
+        }
+        return -2;
     }
 
     @Override
     public void cmdElevator(int elev) {
+        Elevator curr = this.getBuilding().getElevetor(elev);
         if (stillwork[elev] == false) {
-            if ((elev_up_down[0][elev].peek() != null) && (elev_up_down[1][elev].peek() == null)) {
+            if ((elev_up_down[0][elev].isEmpty()==true) && (elev_up_down[1][elev].isEmpty() == false)) {
                 f1(elev);
             } else {
-                if ((elev_up_down[0][elev].peek() == null) && (elev_up_down[1][elev].peek() != null)) {
+                if ((elev_up_down[0][elev].isEmpty() == false) && (elev_up_down[1][elev].isEmpty() == true)) {
                     f2(elev);
                 } else {
-                    if ((elev_up_down[0][elev].peek() != null) && (elev_up_down[1][elev].peek() != null)) {
-                        int tmpup = elev_up_down[0][elev].peek();
-                        int tmpdown = elev_up_down[1][elev].peek();
-                        int currup = (int)((tmpup%z)+1);
-                        int destup = (int)(tmpup/z);
-                        int currdown = (int)((tmpdown%z)+1);
-                        int destdown = (int)(tmpdown/2);
-
-
-
-
-
-
-
+                    if ((elev_up_down[0][elev].isEmpty() ==false) && (elev_up_down[1][elev].isEmpty()==false)) {
+                        f3(elev);
                     }
                 }
 
@@ -113,6 +157,37 @@ public class MyAlgo implements ElevatorAlgo {
                 stillwork[elev] = false;
             }
         }
+
+    private void f3( int elev){ //UP And Down
+        Elevator curr = this.getBuilding().getElevetor(elev);
+        if (curr.getState() == Elevator.LEVEL) {
+            int pos = curr.getPos(); //לעשות איף על הפוזשין ועל המיקום של הקומה הרצויה הנוכחית
+            double tmp = elev_up_down[0][elev].peek();
+            int upto1 = (int) ((tmp % z) + 1);
+            curr.goTo(upto1 );
+            if (curr.getState() != Elevator.LEVEL) {
+                stillwork[elev] = true;
+            }
+            stillwork[elev] = false;
+            double tmp2 = elev_up_down[0][elev].poll();
+            int upto2 = (int) (tmp / z);
+            curr.goTo(upto2);
+            if (curr.getState() != Elevator.LEVEL) {
+                stillwork[elev] = true;
+            }
+            stillwork[elev] = false;
+        } else {
+            stillwork[elev] = false;
+        }
+    }
+
+    /**
+     * This function calculate how many floors from current position to the destination of the call
+     * @param src From what floor did the call come
+     * @param dest What is the destination floor of that call
+     * @param elev Specific elevator we want to check
+     * @return how many floors between the current position(floor) to destination
+     */
     private double checkNumFloorsPerCall(int src, int dest, int elev) {
         int ans = 0;
         int numFloor = checkNumFloorsSD(src, dest);
@@ -128,6 +203,13 @@ public class MyAlgo implements ElevatorAlgo {
         }
         return ans + numFloor;
     }
+
+    /**
+     * This function check how many floors between the source to the destination per call
+     * @param src From what floor did the call come
+     * @param dest What is the destination floor of that call
+     * @return How many floors there are.
+     */
     private double timePerCall(int elev, int src, int dest){
         Elevator newElev = this.myBuilding.getElevetor(elev);
         double speed = newElev.getSpeed();
@@ -135,11 +217,56 @@ public class MyAlgo implements ElevatorAlgo {
         double ans = (2*(newElev.getTimeForClose() + newElev.getTimeForOpen()) + checkNumFloorsPerCall(src, dest, elev)*speed);
         return ans;
     }
+    /**
+     * In this function we get full time to the elevator to do the call.
+     * Start to calculate how many floors there are in the call from start position to the--> source --> destination.
+     * Then calculate the speed per elevator for the per call.
+     * @param elev the num elevator that we work with.
+     * //@param currPos current position, on witch floor the elevator is.
+     * @param src From what floor did the call come
+     * @param dest What is the destination floor of that call
+     * @return The full time
+     */
     private double elevatorSpeed_avaragePerCall(int elev, int src, int dest){
         Elevator newElev = this.myBuilding.getElevetor(elev);
         double speed = newElev.getSpeed();
         double ans = (speed + (speed * timePerCall(elev, src, dest))) /2;
         return ans;
     }
-
+    /**
+     * This function check how many floors between the source to the destination per call
+     * @param src From what floor did the call come
+     * @param dest What is the destination floor of that call
+     * @return How many floors there are.
+     */
+    private int checkNumFloorsSD(int src, int dest){
+        int ans = 0;
+        if(dest < src)
+            ans = dest - src;
+        ans = (dest - src) * (-1);
+        return ans;
     }
+
+    /**
+     * This function returns the last element that has a specific queue (up or down) of a particular elevator sent to it.
+     * @param elev the index of the elevator
+     * @param index this spesific queue we work with now
+     * @return the last value of the queue
+     */
+    private int checkTheLastValueInTheQueue(int elev, int index){
+        Queue<Integer> newQue = (Queue<Integer>) new ArrayList <Integer>();
+        newQue = elev_up_down[index][elev];
+        while(newQue.size() > 1){
+            newQue.poll();
+        }
+        int ans = newQue.poll();
+        return ans;
+    }
+
+    private int finalNum(int src, int dest){
+        double x = (int) ((z * dest) + src);
+        return (int) x;
+    }
+
+
+}
