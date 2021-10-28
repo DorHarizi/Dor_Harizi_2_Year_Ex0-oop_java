@@ -14,6 +14,7 @@ public class MyAlgo implements ElevatorAlgo {
     private Queue<Integer>[][] elev_up_down; //elev_up_down [size(2) row up + row down][building floors];
     private double z;
     private boolean[] stillwork;
+    private int number;
 
     public MyAlgo(Building b) {
         myBuilding = b;
@@ -28,6 +29,7 @@ public class MyAlgo implements ElevatorAlgo {
         for (int i = 0; i < stillwork.length; i++) {
             stillwork[i] = false;
         }
+        number = myBuilding.numberOfElevetors();
     }
 
     @Override
@@ -43,6 +45,15 @@ public class MyAlgo implements ElevatorAlgo {
     @Override
     public int allocateAnElevator(CallForElevator c) {
         int ext = finalNum(c.getSrc(), c.getDest());
+        if(number!=0){
+            if(c.getState()==UP){
+                elev_up_down[0][number].add(ext);
+
+            }else if(c.getState()==DOWN){
+                elev_up_down[1][number].add(ext);
+            }
+            number--;
+        }
 
         for(int i = 0; i < myBuilding.numberOfElevetors(); i++) {
             if (c.getState() == UP) {
@@ -82,21 +93,21 @@ public class MyAlgo implements ElevatorAlgo {
                     return i;
                 }
             }
-            if (c.getState() == DOWN){
+            if (c.getState() == DOWN) {
 
-                if(srcFinalDown >+ c.getSrc()){
+                if (srcFinalDown > +c.getSrc()) {
                     elev_up_down[1][i].add(ext);
                     return i;
                 }
 
-                if(srcFinalDown <= c.getSrc()){
+                if (srcFinalDown <= c.getSrc()) {
                     elev_up_down[1][i].add(ext);
                     return i;
                 }
 
             }
         }
-        return -2;
+        return 0;
     }
 
     @Override
@@ -136,6 +147,7 @@ public class MyAlgo implements ElevatorAlgo {
                     stillwork[elev] = true;
                 }
                 stillwork[elev] = false;
+                elev_up_down[0][elev].poll();
             } else {
                 stillwork[elev] = false;
             }
@@ -159,6 +171,7 @@ public class MyAlgo implements ElevatorAlgo {
                     stillwork[elev] = true;
                 }
                 stillwork[elev] = false;
+                elev_up_down[1][elev].poll();
             } else {
                 stillwork[elev] = false;
             }
