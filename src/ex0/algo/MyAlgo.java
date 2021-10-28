@@ -5,6 +5,7 @@ import ex0.CallForElevator;
 import ex0.Elevator;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class MyAlgo implements ElevatorAlgo {
@@ -17,6 +18,11 @@ public class MyAlgo implements ElevatorAlgo {
     public MyAlgo(Building b) {
         myBuilding = b;
         elev_up_down = new Queue[2][myBuilding.numberOfElevetors()];
+        for(int i=0;i<elev_up_down.length;i++){
+            for(int j=0;j<elev_up_down[i].length;j++){
+                elev_up_down[i][j] = new LinkedList<Integer>();
+            }
+        }
         z = Math.sqrt(Integer.MAX_VALUE);
         stillwork = new boolean[myBuilding.numberOfElevetors()];
         for (int i = 0; i < stillwork.length; i++) {
@@ -97,13 +103,13 @@ public class MyAlgo implements ElevatorAlgo {
     public void cmdElevator(int elev) {
         Elevator curr = this.getBuilding().getElevetor(elev);
         if (stillwork[elev] == false) {
-            if ((elev_up_down[0][elev].isEmpty()==true) && (elev_up_down[1][elev].isEmpty() == false)) {
+            if ((elev_up_down[0][elev].isEmpty()) && (!elev_up_down[1][elev].isEmpty())) {
                 f1(elev);
             } else {
-                if ((elev_up_down[0][elev].isEmpty() == false) && (elev_up_down[1][elev].isEmpty() == true)) {
+                if (!(elev_up_down[0][elev].isEmpty()) && (elev_up_down[1][elev].isEmpty())) {
                     f2(elev);
                 } else {
-                    if ((elev_up_down[0][elev].isEmpty() ==false) && (elev_up_down[1][elev].isEmpty()==false)) {
+                    if (!(elev_up_down[0][elev].isEmpty()) && (!elev_up_down[1][elev].isEmpty())) {
                         f3(elev);
                     }
                 }
@@ -158,26 +164,35 @@ public class MyAlgo implements ElevatorAlgo {
             }
         }
 
-    private void f3( int elev){ //UP And Down
+    private void f3(int elev){
+
+        double x = elev_up_down[0][elev].peek();
+        double y = elev_up_down[1][elev].peek();
+
+        int srcUp = (int)((x % z) + 1);
+        int srcDown = (int)((y % z) + 1);
+        int destUp = (int)(x / z);
+        int destDown = (int)(y / z);
+
         Elevator curr = this.getBuilding().getElevetor(elev);
-        if (curr.getState() == Elevator.LEVEL) {
-            int pos = curr.getPos(); //לעשות איף על הפוזשין ועל המיקום של הקומה הרצויה הנוכחית
-            double tmp = elev_up_down[0][elev].peek();
-            int upto1 = (int) ((tmp % z) + 1);
-            curr.goTo(upto1 );
-            if (curr.getState() != Elevator.LEVEL) {
-                stillwork[elev] = true;
+        if(curr.getState() == UP){
+
+            /**
+             *if the elevator in up direction and we are in the last call in the queue-UP and it's not the max floor, so go to
+             *the floor of the first call(src) in the queue-DOWN, and start serve the calls.
+             *in other case if we get to the max floor of the building, but the calls in the queue-UP is not empty, we still go to the
+             *first call(src) in the queue-DOWN, and start serve the calls.
+             */
+            if(curr.getPos() == myBuilding.maxFloor() || elev_up_down[0][elev].isEmpty()){
+                curr.goTo(srcDown);
+                //start work on the DOWN queue
             }
-            stillwork[elev] = false;
-            double tmp2 = elev_up_down[0][elev].poll();
-            int upto2 = (int) (tmp / z);
-            curr.goTo(upto2);
-            if (curr.getState() != Elevator.LEVEL) {
-                stillwork[elev] = true;
+        }
+        //The same like the first case, but go to the queue-UP from queue-DOWN
+        if(curr.getState() == DOWN){
+            if(curr.getPos() == myBuilding.minFloor() || elev_up_down[1][elev].isEmpty()){
+                curr.goTo(srcUp);
             }
-            stillwork[elev] = false;
-        } else {
-            stillwork[elev] = false;
         }
     }
 
@@ -254,13 +269,17 @@ public class MyAlgo implements ElevatorAlgo {
      * @return the last value of the queue
      */
     private int checkTheLastValueInTheQueue(int elev, int index){
-        Queue<Integer> newQue = (Queue<Integer>) new ArrayList <Integer>();
+        Queue<Integer> newQue = new LinkedList<Integer>();
         newQue = elev_up_down[index][elev];
-        while(newQue.size() > 1){
-            newQue.poll();
+        if(newQue.size()!=0){
+            while(newQue.size() > 1){
+                newQue.poll();
+
+            }
+            int ans = newQue.poll();
+            return ans;
         }
-        int ans = newQue.poll();
-        return ans;
+        return 0;
     }
 
     private int finalNum(int src, int dest){
