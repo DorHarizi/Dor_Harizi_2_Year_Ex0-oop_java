@@ -3,38 +3,41 @@ package ex0.algo;
 import ex0.Building;
 import ex0.CallForElevator;
 import ex0.Elevator;
-
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class MyAlgo implements ElevatorAlgo {
-    public static final int UP = 1, DOWN = -1;
-    private Building myBuilding;
-    private Queue<Integer>[][] elev_up_down; //elev_up_down [size(2) row up + row down][building floors];
-    private double z;
-    private boolean[] stillwork;
-    private int number;
 
-    public MyAlgo(Building b) {
-        myBuilding = b;
-        elev_up_down = new Queue[2][myBuilding.numberOfElevetors()];
-        for(int i=0;i<elev_up_down.length;i++){
-            for(int j=0;j<elev_up_down[i].length;j++){
-                elev_up_down[i][j] = new LinkedList<Integer>();
-            }
+    private Building MyBuilding;
+    private ArrayList<Elevator> MyElevators;
+    private ArrayList<CallForElevator>[] callsPerElevator;
+    private ArrayList<Integer> allCalls;
+    //    private Queue<CallForElevator> UPCalls;
+//    private Queue<CallForElevator> DOWNCalls;
+    private Elevator[] ElevatorsSpeedSort;
+    private ArrayList<Integer> freeElevator;
+
+
+
+
+    //Constructor
+    public MyAlgo(Building B){
+        this.MyBuilding = B;
+        MyElevators = new ArrayList<Elevator>();
+        callsPerElevator = new ArrayList[MyBuilding.numberOfElevetors()];
+        allCalls = new ArrayList<Integer>();
+        freeElevator = new ArrayList<Integer>();
+        ElevatorsSpeedSort = new Elevator[MyBuilding.numberOfElevetors()];
+        for (int i = 0; i < MyBuilding.numberOfElevetors(); i++) {
+            MyElevators.add(MyBuilding.getElevetor(i));
+            ElevatorsSpeedSort[i] = MyBuilding.getElevetor(i);
+            callsPerElevator[i] = new ArrayList<CallForElevator>();
         }
-        z = Math.sqrt(Integer.MAX_VALUE);
-        stillwork = new boolean[myBuilding.numberOfElevetors()];
-        for (int i = 0; i < stillwork.length; i++) {
-            stillwork[i] = false;
-        }
-        number = myBuilding.numberOfElevetors();
+        ElevatorsSpeedSort();
     }
 
     @Override
     public Building getBuilding() {
-        return myBuilding;
+        return MyBuilding;
     }
 
     @Override
@@ -42,263 +45,218 @@ public class MyAlgo implements ElevatorAlgo {
         return "Ex0_OOP_dor_dana_Elevator_Algo";
     }
 
+
     @Override
     public int allocateAnElevator(CallForElevator c) {
-        int ext = finalNum(c.getSrc(), c.getDest());
-        if(number!=0){
-            if(c.getState()==UP){
-                elev_up_down[0][number].add(ext);
 
-            }else if(c.getState()==DOWN){
-                elev_up_down[1][number].add(ext);
-            }
-            number--;
+        //if there is only one elevator
+        if (MyBuilding.numberOfElevetors() == 1) {
+            callsPerElevator[0].add(c);
+            return 0;
         }
 
-        for(int i = 0; i < myBuilding.numberOfElevetors(); i++) {
-            if (c.getState() == UP) {
-                if (elev_up_down[0][i].isEmpty()) {
-                    elev_up_down[0][i].add(ext);
-                    return i;
-                }
-            }
-            if (c.getState() == DOWN) {
-                if (elev_up_down[1][i].isEmpty()) {
-                    elev_up_down[1][i].add(ext);
-                    return i;
-                }
+        //Start checking which elevator is available
+        freeElevator.clear();
+        for (int i = 0; i < this.MyBuilding.numberOfElevetors(); i++) {
+            if (callsPerElevator[i].size() == 0) {
+                freeElevator.add(i);
             }
         }
 
-        for(int i = 0; i < myBuilding.numberOfElevetors(); i++) {
+        if (freeElevator.isEmpty()) {
+            //case 1
+            //check if the gap between the src and the dest is big-take the most fast elevator.
+            int howManyFloors = Math.abs(c.getDest() - c.getSrc());
+            int howManyFloorsInTheBuilding = MyBuilding.maxFloor() - MyBuilding.minFloor();
+            double checkGap = (howManyFloors / howManyFloorsInTheBuilding);
+            if (checkGap > 0.5) {
+                callsPerElevator[theMostFastElevator()].add(c);
+                return theMostFastElevator();
+            }
+            allCalls.clear();
+            int sum = 0;
+            for (int i = 0; i < MyBuilding.numberOfElevetors(); i++) {
+                allCalls.add(callsPerElevator[i].size());
+                sum += callsPerElevator[i].size();
+            }
+            allCalls.add(sum);
 
-            double FinalUp = (int) checkTheLastValueInTheQueue(i, 0);
-            int srcFinalUp = (int) (FinalUp % z) + 1;
-            int destFinalUp = (int) (FinalUp / z);
-
-            double FinalDown = (int) checkTheLastValueInTheQueue(i, 1);
-            int srcFinalDown = (int) (FinalDown % z) + 1;
-            int destFinalDown = (int) (FinalDown / z);
-
-            if (c.getState() == UP) {
-
-                //if elev up src <= c.crs
-                if (srcFinalUp <= c.getSrc()) {
-                    elev_up_down[0][i].add(ext);
-                    return i;
-                }
-                //if elev down dest >= c.src
-                if (destFinalDown >= c.getSrc()) {
-                    elev_up_down[0][i].add(ext);
-                    return i;
+            //case 2
+            //check if there are the same calls in current time in other elevator that can take this call
+            if (sameCallsAtThisMoment() != -1) {
+                callsPerElevator[sameCallsAtThisMoment()].add(c);
+                return sameCallsAtThisMoment();
+            } else {
+                //case 3
+                //if there is no similar calls we will check the elevator with the less calls to take this one
+                if (sameCallsAtThisMoment() == -1) {
+                    int less = fewestCalls(c);
+                    callsPerElevator[less].add(c);
+                    return less;
+                } else {
+                    //case 4
+                    //if there are no similar calls, and all the elevators have the same amount of calls, so this is the last option just go to the closest elevator.
+                    int close = checkTheClosestElevator(c);
+                    callsPerElevator[close].add(c);
+                    return MyElevators.get(close).getID();
                 }
             }
-            if (c.getState() == DOWN) {
-
-                if (srcFinalDown > +c.getSrc()) {
-                    elev_up_down[1][i].add(ext);
-                    return i;
-                }
-
-                if (srcFinalDown <= c.getSrc()) {
-                    elev_up_down[1][i].add(ext);
-                    return i;
-                }
-
-            }
+        } else {//if the freeElevator is not empty
+            callsPerElevator[freeElevator.get(0)].add(c);
+            return freeElevator.get(0);
         }
-        return 0;
     }
 
+
+    //**************************************************************************//
     @Override
     public void cmdElevator(int elev) {
-        Elevator curr = this.getBuilding().getElevetor(elev);
-        if (stillwork[elev] == false) {
-            if ((elev_up_down[0][elev].isEmpty()) && (!elev_up_down[1][elev].isEmpty())) {
-                f1(elev);
-            } else {
-                if (!(elev_up_down[0][elev].isEmpty()) && (elev_up_down[1][elev].isEmpty())) {
-                    f2(elev);
-                } else {
-                    if (!(elev_up_down[0][elev].isEmpty()) && (!elev_up_down[1][elev].isEmpty())) {
-                        f3(elev);
+
+//        "no calls";
+        if (callsPerElevator[elev].size() == 0){
+            return;
+
+        } else {
+
+//            if(callsPerElevator[elev].get(0).getState())
+
+//          "done to src then go to dest";
+            if(MyElevators.get(elev).getState()==0&&callsPerElevator[elev].get(0).getState()==2){
+                MyElevators.get(elev).goTo(callsPerElevator[elev].get(0).getDest());
+                return;
+            }
+
+//          "done the mission then remove from the callsPerElevator  the call";
+            if(MyElevators.get(elev).getState()==0&&callsPerElevator[elev].get(0).getState()==3){
+                callsPerElevator[elev].remove(0);
+                cmdElevator(elev);
+                return;
+            }
+
+
+            if(MyElevators.get(elev).getState()==0&&callsPerElevator[elev].get(0).getState()!=2){
+                MyElevators.get(elev).goTo(callsPerElevator[elev].get(0).getSrc());
+                for(int i=1;i<callsPerElevator[elev].size();i++){
+
+                    if(callsPerElevator[elev].get(i).getType()==callsPerElevator[elev].get(0).getType()&&callsPerElevator[elev].get(0).getType()==1){
+                        if(MyElevators.get(elev).getPos() == callsPerElevator[elev].get(i).getSrc()&&callsPerElevator[elev].get(i).getDest()<callsPerElevator[elev].get(0).getDest()){
+                            MyElevators.get(elev).stop(callsPerElevator[elev].get(i).getDest());
+                            break;
+                        }
+                    }
+
+                    if(callsPerElevator[elev].get(i).getType()==callsPerElevator[elev].get(0).getType()&&callsPerElevator[elev].get(0).getType()==-1){
+                        if(callsPerElevator[elev].get(i).getSrc()==callsPerElevator[elev].get(0).getSrc()&&callsPerElevator[elev].get(i).getDest()>callsPerElevator[elev].get(0).getDest()){
+                            MyElevators.get(elev).stop(callsPerElevator[elev].get(i).getDest());
+                            callsPerElevator[elev].remove(i);
+                            break;
+                        }
+                        else if(callsPerElevator[elev].get(i).getDest()==callsPerElevator[elev].get(0).getDest()&&callsPerElevator[elev].get(i).getSrc()<callsPerElevator[elev].get(0).getSrc()){
+                            MyElevators.get(elev).stop(callsPerElevator[elev].get(i).getSrc());
+                            callsPerElevator[elev].remove(i);
+                            break;
+                        }
+                    }
+
+                }
+                return;
+            }
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+    //**************************************************************************//
+
+
+    //This function is searching the closest elevator that is available to take the call
+    private int checkTheClosestElevator(CallForElevator c){
+        int ans = 0;
+        int gap = Math.abs(MyBuilding.getElevetor(freeElevator.get(0)).getPos() - c.getSrc());
+        for(int i = 0; i < freeElevator.size(); i++){
+            if(gap > Math.abs(MyBuilding.getElevetor(freeElevator.get(i)).getPos())){
+                ans = freeElevator.get(i);
+                gap = Math.abs(MyBuilding.getElevetor(freeElevator.get(i)).getPos() - c.getSrc());
+            }
+        }
+        return ans;
+    }
+
+    ///*********************???***********************//
+    private int fewestCalls(CallForElevator c){
+        //double average = allCalls.size() / MyBuilding.numberOfElevators();
+        int ans = callsPerElevator[0].size();
+        for(int i = 1; i < callsPerElevator.length; i++){
+            if(callsPerElevator[i].size() > callsPerElevator[i+1].size()){
+                ans = callsPerElevator[i+1].size();
+            }
+        }
+        return ans;
+    }
+
+
+    //This function is sorting the array that representing the from the fastest elevator to the most slow elevator
+    private void ElevatorsSpeedSort() {
+        for (int i = 0; i < ElevatorsSpeedSort.length; i++) {
+            for (int j = 0; j < ElevatorsSpeedSort.length - 1 - i; j++)
+                if (ElevatorsSpeedSort[j].getSpeed() > ElevatorsSpeedSort[j + 1].getSpeed())
+                    swap(ElevatorsSpeedSort, j, j + 1);
+        }
+    }
+
+    private void swap(Elevator[] elevatorsSpeedSort, int j, int i) {
+        Elevator temp = elevatorsSpeedSort[i];
+        elevatorsSpeedSort[i] = elevatorsSpeedSort[j];
+        elevatorsSpeedSort[j] = temp;
+    }
+
+    //This function returns the fastest elevator of all the elevators in the array
+    private int theMostFastElevator(){
+        int ans=0;
+        double temp= MyElevators.get(0).getSpeed();
+        for (int i = 1; i< MyBuilding.numberOfElevetors(); i++){
+            if(MyElevators.get(i).getSpeed() > temp){
+                temp = MyElevators.get(i).getSpeed();
+                ans = i;
+            }
+        }
+        return ans;
+    }
+
+    //In this function we can see which calls exist that can optimize the calls on the way, and this will be done by checking that if the source
+    // and destination of the call is between the source and the destination of the current call in which the elevator is located, considering the direction of the elevator.
+    private int sameCallsAtThisMoment() {
+        double average = allCalls.size() / MyBuilding.numberOfElevetors();
+        for (int i = 0; i < MyBuilding.numberOfElevetors(); i++) {
+            if (callsPerElevator[i].get(0).getType() == CallForElevator.UP) { //check if my call is up
+                for (int j = 0; j < callsPerElevator[j].size(); j++) {
+                        if ((callsPerElevator[i].get(j).getType() == CallForElevator.UP) &&
+                                (callsPerElevator[i].get(0).getSrc() <= callsPerElevator[i].get(j).getSrc()) &&
+                                (callsPerElevator[i].get(j).getDest() <= callsPerElevator[i].get(0).getDest()) &&
+                                (average > callsPerElevator[i].size()))
+                            return i;
+
+                }
+            } else if (callsPerElevator[i].get(0).getType() == CallForElevator.DOWN) { //check if my call is down
+                for (int j = 0; j < callsPerElevator[i].size(); j++) {
+                    if (callsPerElevator[i].get(j).getType() == CallForElevator.DOWN) {
+                        if ((callsPerElevator[i].get(0).getSrc() >= callsPerElevator[i].get(j).getSrc()) && (callsPerElevator[i].get(j).getDest() >= callsPerElevator[i].get(0).getDest())) {
+                            return i;
+                        } else if ((callsPerElevator[i].get(0).getDest() == callsPerElevator[i].get(j).getDest()) && (callsPerElevator[i].get(j).getSrc() < callsPerElevator[i].get(0).getSrc())) {
+                            if (average > callsPerElevator[i].size())
+                                return i;
+                        }
                     }
                 }
-
             }
         }
+        return -1;
     }
-
-        private void f1( int elev){ //UP
-            Elevator curr = this.getBuilding().getElevetor(elev);
-            if (curr.getState() == Elevator.LEVEL) {
-                int pos = curr.getPos(); //לעשות איף על הפוזשין ועל המיקום של הקומה הרצויה הנוכחית
-                double tmp = elev_up_down[0][elev].peek();
-                int upto1 = (int) ((tmp % z) + 1);
-                curr.goTo(upto1 );
-                if (curr.getState() != Elevator.LEVEL) {
-                    stillwork[elev] = true;
-                }
-                stillwork[elev] = false;
-                double tmp2 = elev_up_down[0][elev].poll();
-                int upto2 = (int) (tmp / z);
-                curr.goTo(upto2);
-                if (curr.getState() != Elevator.LEVEL) {
-                    stillwork[elev] = true;
-                }
-                stillwork[elev] = false;
-                elev_up_down[0][elev].poll();
-            } else {
-                stillwork[elev] = false;
-            }
-        }
-
-        private void f2(int elev){ // down
-            Elevator curr = this.getBuilding().getElevetor(elev);
-            if (curr.getState() == Elevator.LEVEL) {
-                int pos = curr.getPos();
-                double tmp = elev_up_down[1][elev].peek();
-                int downto1 = (int) ((tmp % z)+1);
-                curr.goTo(downto1);
-                if (curr.getState() != Elevator.LEVEL) {
-                    stillwork[elev] = true;
-                }
-                stillwork[elev] = false;
-                double tmp2 = elev_up_down[0][elev].poll();
-                int downto2 = (int) (tmp2 / z);
-                curr.goTo(downto2);
-                if (curr.getState() != Elevator.LEVEL) {
-                    stillwork[elev] = true;
-                }
-                stillwork[elev] = false;
-                elev_up_down[1][elev].poll();
-            } else {
-                stillwork[elev] = false;
-            }
-        }
-
-    private void f3(int elev){
-
-        double x = elev_up_down[0][elev].peek();
-        double y = elev_up_down[1][elev].peek();
-
-        int srcUp = (int)((x % z) + 1);
-        int srcDown = (int)((y % z) + 1);
-        int destUp = (int)(x / z);
-        int destDown = (int)(y / z);
-
-        Elevator curr = this.getBuilding().getElevetor(elev);
-        if(curr.getState() == UP){
-
-            /**
-             *if the elevator in up direction and we are in the last call in the queue-UP and it's not the max floor, so go to
-             *the floor of the first call(src) in the queue-DOWN, and start serve the calls.
-             *in other case if we get to the max floor of the building, but the calls in the queue-UP is not empty, we still go to the
-             *first call(src) in the queue-DOWN, and start serve the calls.
-             */
-            if(curr.getPos() == myBuilding.maxFloor() || elev_up_down[0][elev].isEmpty()){
-                curr.goTo(srcDown);
-                //start work on the DOWN queue
-            }
-        }
-        //The same like the first case, but go to the queue-UP from queue-DOWN
-        if(curr.getState() == DOWN){
-            if(curr.getPos() == myBuilding.minFloor() || elev_up_down[1][elev].isEmpty()){
-                curr.goTo(srcUp);
-            }
-        }
-    }
-
-    /**
-     * This function calculate how many floors from current position to the destination of the call
-     * @param src From what floor did the call come
-     * @param dest What is the destination floor of that call
-     * @param elev Specific elevator we want to check
-     * @return how many floors between the current position(floor) to destination
-     */
-    private double checkNumFloorsPerCall(int src, int dest, int elev) {
-        int ans = 0;
-        int numFloor = checkNumFloorsSD(src, dest);
-        Elevator currElev = this.myBuilding.getElevetor(elev);
-//      int state = currElev.getState(); // return the state up = 1, down =-1, level = 0 (not move)
-        int currPos = currElev.getPos(); //return the current floor
-        if (src < currPos) {
-            ans = currPos - src;
-        }else if(src > currPos){
-            ans = src - currPos;
-        }else{
-            ans = 0;
-        }
-        return ans + numFloor;
-    }
-
-    /**
-     * This function check how many floors between the source to the destination per call
-     * @param src From what floor did the call come
-     * @param dest What is the destination floor of that call
-     * @return How many floors there are.
-     */
-    private double timePerCall(int elev, int src, int dest){
-        Elevator newElev = this.myBuilding.getElevetor(elev);
-        double speed = newElev.getSpeed();
-        // add call in case that the pos and the src are even
-        double ans = (2*(newElev.getTimeForClose() + newElev.getTimeForOpen()) + checkNumFloorsPerCall(src, dest, elev)*speed);
-        return ans;
-    }
-    /**
-     * In this function we get full time to the elevator to do the call.
-     * Start to calculate how many floors there are in the call from start position to the--> source --> destination.
-     * Then calculate the speed per elevator for the per call.
-     * @param elev the num elevator that we work with.
-     * //@param currPos current position, on witch floor the elevator is.
-     * @param src From what floor did the call come
-     * @param dest What is the destination floor of that call
-     * @return The full time
-     */
-    private double elevatorSpeed_avaragePerCall(int elev, int src, int dest){
-        Elevator newElev = this.myBuilding.getElevetor(elev);
-        double speed = newElev.getSpeed();
-        double ans = (speed + (speed * timePerCall(elev, src, dest))) /2;
-        return ans;
-    }
-    /**
-     * This function check how many floors between the source to the destination per call
-     * @param src From what floor did the call come
-     * @param dest What is the destination floor of that call
-     * @return How many floors there are.
-     */
-    private int checkNumFloorsSD(int src, int dest){
-        int ans = 0;
-        if(dest < src)
-            ans = dest - src;
-        ans = (dest - src) * (-1);
-        return ans;
-    }
-
-    /**
-     * This function returns the last element that has a specific queue (up or down) of a particular elevator sent to it.
-     * @param elev the index of the elevator
-     * @param index this spesific queue we work with now
-     * @return the last value of the queue
-     */
-    private int checkTheLastValueInTheQueue(int elev, int index){
-        Queue<Integer> newQue = new LinkedList<Integer>();
-        newQue = elev_up_down[index][elev];
-        if(newQue.size()!=0){
-            while(newQue.size() > 1){
-                newQue.poll();
-
-            }
-            int ans = newQue.poll();
-            return ans;
-        }
-        return 0;
-    }
-
-    private int finalNum(int src, int dest){
-        double x = (int) ((z * dest) + src);
-        return (int) x;
-    }
-
-
 }
