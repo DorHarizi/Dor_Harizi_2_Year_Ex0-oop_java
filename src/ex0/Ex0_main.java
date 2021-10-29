@@ -1,9 +1,6 @@
 package ex0;
 
-import ex0.algo.ElevatorAlgo;
-import ex0.algo.ShabatElev2Algo;
-import ex0.algo.ShabatElev3Algo;
-import ex0.algo.ShabatElevAlgo;
+import ex0.algo.*;
 import ex0.simulator.Simulator_A;
 
 /**
@@ -15,7 +12,7 @@ public class Ex0_main {
     public static void main(String[] ar) {
         String codeOwner = codeOwner();
         Simulator_A.setCodeOwner(codeOwner);
-        int stage = 9;  // any case in [0,9].
+        int stage = 1;  // any case in [0,9].
         System.out.println("Ex0 Simulator: isStarting, stage="+stage+") ... =  ");
         String callFile = null; // use the predefined cases [0-9].
         //String callFile = "data/Ex0_stage_2__.csv"; //
@@ -23,7 +20,8 @@ public class Ex0_main {
 
        // ElevatorAlgo ex0_alg = new ShabatElevAlgo(Simulator_A.getBuilding());  // The simplest algo ever (Shabat Elev).
        // ElevatorAlgo ex0_alg1 = new ShabatElev2Algo(Simulator_A.getBuilding()); // Shabat Elev with a minor twist
-        ElevatorAlgo ex0_alg2 = new ShabatElev3Algo(Simulator_A.getBuilding());
+       // ElevatorAlgo ex0_alg2 = new MyAlgo(Simulator_A.getBuilding());
+        ElevatorAlgo ex0_alg2 = new MyAlgoTmp(Simulator_A.getBuilding());
        // Shabat Elev with two trick - replace with your code;
         Simulator_A.initAlgo(ex0_alg2); // init the algorithm to be used by the simulator
       //  Simulator_A.initAlgo(ex0_alg1);

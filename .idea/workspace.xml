@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4e7f6056-3772-4e06-abd5-e7ef2ba94a6c" name="Default Changelist" comment="hghghghgh">
+    <list default="true" id="4e7f6056-3772-4e06-abd5-e7ef2ba94a6c" name="Default Changelist" comment="dor and dana">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/Ex0_Calls_case_9_.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/Ex0_Calls_case_9_.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Ex0_Test/ex0/Ex0_main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Ex0_Test/ex0/Ex0_main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ex0/Ex0_main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ex0/Ex0_main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ex0/algo/MyAlgo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ex0/algo/MyAlgo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ex0/algo/MyAlgo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +97,28 @@
       <option name="project" value="LOCAL" />
       <updated>1635417591187</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="dor and dana">
+      <created>1635436536888</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1635436536888</updated>
+    </task>
+    <task id="LOCAL-00006" summary="dor and dana">
+      <created>1635445562541</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1635445562541</updated>
+    </task>
+    <task id="LOCAL-00007" summary="dor and dana">
+      <created>1635447233399</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1635447233399</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -116,6 +136,38 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update" />
     <MESSAGE value="hghghghgh" />
-    <option name="LAST_COMMIT_MESSAGE" value="hghghghgh" />
+    <MESSAGE value="dor and dana" />
+    <option name="LAST_COMMIT_MESSAGE" value="dor and dana" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java</url>
+          <line>105</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java</url>
+          <line>100</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java</url>
+          <line>93</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java</url>
+          <line>88</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java</url>
+          <line>52</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
