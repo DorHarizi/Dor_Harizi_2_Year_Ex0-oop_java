@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4e7f6056-3772-4e06-abd5-e7ef2ba94a6c" name="Default Changelist" comment="dor and dana">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ex0/algo/myalgotmp2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ex0/algo/myalgotmp2Test.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ex0_Test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Ex0_Test.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ex0/Ex0_main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ex0/Ex0_main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ex0/algo/MyAlgo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ex0/algo/MyAlgoTmp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ex0/algo/MyAlgo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ex0/algo/MyAlgo.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +18,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Class" />
+        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
@@ -29,18 +34,33 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers" value="true" />
+    <property name="create.test.in.the.same.root" value="true" />
     <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\dorha\IdeaProjects\DOR 2nd year\src\ex0" />
       <recent name="C:\Users\dorha\IdeaProjects\DOR 2nd year" />
       <recent name="C:\Users\dorha\IdeaProjects\DOR 2nd year\src" />
     </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="ex0.algo" />
+    </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.myalgotmp2Test.cmdElevator">
     <configuration name="Ex0_main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ex0.Ex0_main" />
       <module name="Ex0_Test" />
@@ -54,8 +74,58 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="myalgotmp2Test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Ex0_Test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ex0.algo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ex0.algo" />
+      <option name="MAIN_CLASS_NAME" value="ex0.algo.myalgotmp2Test" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="myalgotmp2Test.allocateAnElevator" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Ex0_Test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ex0.algo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ex0.algo" />
+      <option name="MAIN_CLASS_NAME" value="ex0.algo.myalgotmp2Test" />
+      <option name="METHOD_NAME" value="allocateAnElevator" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="myalgotmp2Test.cmdElevator" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Ex0_Test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ex0.algo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ex0.algo" />
+      <option name="MAIN_CLASS_NAME" value="ex0.algo.myalgotmp2Test" />
+      <option name="METHOD_NAME" value="cmdElevator" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.myalgotmp2Test.cmdElevator" />
+        <item itemvalue="JUnit.myalgotmp2Test.allocateAnElevator" />
+        <item itemvalue="JUnit.myalgotmp2Test" />
         <item itemvalue="Application.Ex0_main" />
       </list>
     </recent_temporary>
@@ -118,7 +188,14 @@
       <option name="project" value="LOCAL" />
       <updated>1635447233399</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="dor and dana">
+      <created>1635515506208</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1635515506208</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
