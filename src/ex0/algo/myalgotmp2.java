@@ -122,7 +122,6 @@ public class myalgotmp2 implements ElevatorAlgo {
                     //"done to src then go to dest";
                 }
 
-
                 if (callsPerElevator[elev].get(0).getState() == 3) {
                     callsPerElevator[elev].remove(0);
                     cmdElevator(elev);
@@ -157,43 +156,6 @@ public class myalgotmp2 implements ElevatorAlgo {
                 }
 
             }
-
-//            if (MyElevators.get(elev).getState() == 1) {
-//                for (int i = 1; i < callsPerElevator[elev].size(); i++) {
-//                    if (callsPerElevator[elev].get(i).getType() == 1) {
-//                        if (callsPerElevator[elev].get(i).getState() == 1 && callsPerElevator[elev].get(i).getSrc() < callsPerElevator[elev].get(0).getSrc()) {
-//                            MyElevators.get(elev).stop(callsPerElevator[elev].get(i).getSrc());
-//                            callsPerElevator[elev].remove(i);
-//                            break;
-//                        }
-//                        if (callsPerElevator[elev].get(i).getState() == 2 && MyElevators.get(elev).getPos() < callsPerElevator[elev].get(i).getSrc()) {
-//                            MyElevators.get(elev).stop(callsPerElevator[elev].get(i).getSrc());
-//                            callsPerElevator[elev].remove(i);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//
-//                if (MyElevators.get(elev).getState() == -1) {
-//                    for (int i = 1; i < callsPerElevator[elev].size(); i++) {
-//                        if (callsPerElevator[elev].get(i).getType() == -1) {
-//                            if (callsPerElevator[elev].get(i).getState() == 1 && callsPerElevator[elev].get(i).getSrc() > callsPerElevator[elev].get(0).getSrc()) {
-//                                MyElevators.get(elev).stop(callsPerElevator[elev].get(i).getSrc());
-//                                callsPerElevator[elev].remove(i);
-//                                break;
-//                            }
-//                            if (callsPerElevator[elev].get(i).getState() == 2 && MyElevators.get(elev).getPos() > callsPerElevator[elev].get(i).getSrc()) {
-//                                MyElevators.get(elev).stop(callsPerElevator[elev].get(i).getSrc());
-//                               callsPerElevator[elev].remove(i);
-//                                break;
-//                            }
-//                        }
-//                   }
-//                }
-
-
-
         }
 }
 
